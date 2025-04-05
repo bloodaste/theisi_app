@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "828612256891",
+    "project_id": "inventorymanagement-221b2",
+    "storage_bucket": "inventorymanagement-221b2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:828612256891:android:5323c23f4f2362fbe5eede",
+        "android_client_info": {
+          "package_name": "com.cafepiat.theisi_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxot4m4BXkX1Z_ICFknk8HFCXLDLihK-8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

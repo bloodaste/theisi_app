@@ -1,0 +1,2 @@
+C:/Users/kurt andrei/Downloads/thesisapp/theisi_app/android/app/.cxx/RelWithDebInfo/326j3f1j/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/kurt andrei/Downloads/thesisapp/theisi_app/android/app/.cxx/RelWithDebInfo/326j3f1j/x86_64/CMakeFiles/rebuild_cache.dir
