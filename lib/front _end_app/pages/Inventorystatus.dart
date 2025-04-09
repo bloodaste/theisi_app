@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:theisi_app/front%20_end_app/componets/addproduct.dart';
 import 'package:theisi_app/front%20_end_app/componets/listforproduct.dart';
 import 'package:theisi_app/front%20_end_app/models/modeldata.dart';
+import 'package:theisi_app/service/authservice.dart';
 import 'package:theisi_app/service/database.dart';
 import 'package:theisi_app/service/qrdatabase.dart';
 
@@ -31,12 +32,34 @@ class _AnalyticspageState extends State<Analyticspage> {
   List<Modeldataforproducts> products = [];
   List<Map<String, dynamic>> rfidlist = [];
   String? seletedrfid;
+  Authservice getcurrentrole = Authservice();
+  String currentrole = '';
 
   final TextEditingController controller = TextEditingController();
   final TextEditingController addname = TextEditingController();
   final TextEditingController stocklvel = TextEditingController();
   final TextEditingController needtobestock = TextEditingController();
   final TextEditingController layernumber = TextEditingController();
+
+  void fetchrole() async {
+    String? role = await getcurrentrole.getuserrole();
+    print("Fetched role: $role");
+    if (role == 'Admin') {
+      setState(() {
+        currentrole = 'Admin';
+      });
+    } else if (role == 'Employee') {
+      setState(() {
+        currentrole = 'Employee';
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text('your are not either employee or admin of this store')),
+      );
+    }
+  }
 
   void fetchQr() {
     rfid.getqr().listen(
@@ -105,12 +128,11 @@ class _AnalyticspageState extends State<Analyticspage> {
       if (id['qr'] == productinfo) {
         rfidDocId = id['docid'];
         linked = id['islinked'];
-        break; // Exit loop early since we found the matching RFID
+        break;
       }
     }
 
     if (rfidDocId != null && linked != null) {
-      // If RFID info is found, update it
       rfid.updateqr(rfidDocId, !linked);
     } else {
       // Provide feedback if RFID is not found or linked value is missing
@@ -447,6 +469,7 @@ class _AnalyticspageState extends State<Analyticspage> {
                     });
                   },
                   child: ProductList(
+                    currentrole: currentrole,
                     nameOfProduct: filtered[index].name,
                     quantityOfProduct: filtered[index].total,
                     restockOfProduct: filtered[index].resupply,
@@ -466,6 +489,7 @@ class _AnalyticspageState extends State<Analyticspage> {
             onPressed: () {
               print(rfidlist);
               print(seletedrfid);
+              print(currentrole);
             },
             child: Text('pressme'),
           )

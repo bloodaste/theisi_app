@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:theisi_app/front%20_end_app/models/usermodel.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class Authservice {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _accountloc = FirebaseFirestore.instance;
 
   Usermodel? useridanon(User? user) {
     return user != null ? Usermodel(userid: user.uid) : null;
@@ -10,6 +14,12 @@ class Authservice {
 
   Stream<Usermodel?> get userfunction {
     return _auth.authStateChanges().map(useridanon);
+  }
+
+  String hasspaswrod(password) {
+    final bytes = utf8.encode(password);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
   // annonymous login
@@ -37,15 +47,26 @@ class Authservice {
   }
 
   Future<Usermodel?> signup(
-      String email, String password, String employeenumber) async {
+    String name,
+    String password,
+    String email,
+    String role,
+  ) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
+        email: email.trim(),
+        password: password.trim(),
       );
 
       User? user = result.user;
 
+      //account type to determin the account type of the user
+      await _accountloc.collection('useraccount').doc(user!.uid).set({
+        'email': email,
+        'password': hasspaswrod(password),
+        'Name': name,
+        'role': role,
+      });
       return useridanon(user);
     } catch (e) {
       print("Signup error: $e");
@@ -56,7 +77,9 @@ class Authservice {
   Future<Usermodel?> signin(String email, String passowrd) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
-          email: email, password: passowrd);
+        email: email.trim(),
+        password: passowrd.trim(),
+      );
 
       User? user = result.user;
       return useridanon(user);
@@ -74,6 +97,23 @@ class Authservice {
     }
   }
 
+  Future<String?> getuserrole() async {
+    User? user = _auth.currentUser;
+
+    try {
+      if (user != null) {
+        DocumentSnapshot snapshot =
+            await _accountloc.collection('useraccount').doc(user.uid).get();
+        if (snapshot.exists) {
+          return snapshot['role'];
+        }
+      }
+      return null;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
   // Future otp()async{
   //   try{
   //     await _auth.s

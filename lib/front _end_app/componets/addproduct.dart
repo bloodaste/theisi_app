@@ -1,5 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:theisi_app/service/authservice.dart';
 
 class Addproducts extends StatefulWidget {
   const Addproducts({
@@ -27,6 +28,7 @@ class Addproducts extends StatefulWidget {
 
 class _AddproductsState extends State<Addproducts> {
   String? selectedRfid;
+  Authservice service = Authservice();
 
   @override
   Widget build(BuildContext context) {

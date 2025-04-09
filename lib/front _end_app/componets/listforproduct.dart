@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class ProductList extends StatefulWidget {
   const ProductList(
       {super.key,
+      required this.currentrole,
       required this.nameOfProduct,
       required this.quantityOfProduct,
       required this.restockOfProduct,
@@ -20,6 +21,7 @@ class ProductList extends StatefulWidget {
   final bool showbotton;
   final Future<void> Function() edit;
   final Future<void> Function() delete;
+  final String currentrole;
 
   @override
   State<ProductList> createState() => _ProductListState();
@@ -165,35 +167,39 @@ class _ProductListState extends State<ProductList> {
                       ),
                     ),
                     SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: widget.edit,
-                        icon: Icon(Icons.edit, color: Colors.white),
-                        label:
-                            Text("EDIT", style: TextStyle(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                      ),
-                    ),
+                    widget.currentrole == 'Admin'
+                        ? Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: widget.edit,
+                              icon: Icon(Icons.edit, color: Colors.white),
+                              label: Text("EDIT",
+                                  style: TextStyle(color: Colors.white)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                              ),
+                            ),
+                          )
+                        : SizedBox(),
                     SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: widget.delete,
-                        icon: Icon(Icons.delete, color: Colors.white),
-                        label: Text("DELETE",
-                            style: TextStyle(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                      ),
-                    ),
+                    widget.currentrole == 'Admin'
+                        ? Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: widget.delete,
+                              icon: Icon(Icons.delete, color: Colors.white),
+                              label: Text("DELETE",
+                                  style: TextStyle(color: Colors.white)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                              ),
+                            ),
+                          )
+                        : SizedBox(),
                   ],
                 ),
               ],

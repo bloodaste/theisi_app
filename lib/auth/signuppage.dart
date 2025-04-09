@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:theisi_app/front%20_end_app/componets/textformforloginpage.dart';
 import 'package:theisi_app/front%20_end_app/componets/button.dart';
@@ -17,6 +18,8 @@ class _SignupState extends State<Signup> {
   final TextEditingController email = TextEditingController();
   String error = '';
   bool showpassowd = true;
+  List accounttype = ['Admin', 'Employee'];
+  String? accounttypeholder;
 
   final Authservice _auth = Authservice();
 
@@ -90,7 +93,7 @@ class _SignupState extends State<Signup> {
                         height: 20,
                       ),
                       Inputform(
-                        hintext: 'Employee No.',
+                        hintext: 'Email',
                         obsure: false,
                         profile: Icon(Icons.person),
                         control: email,
@@ -125,11 +128,47 @@ class _SignupState extends State<Signup> {
                       SizedBox(
                         height: 20,
                       ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 30),
+                        child: DropdownButton2(
+                          isExpanded: true,
+                          value: accounttypeholder,
+                          underline: SizedBox.shrink(),
+                          hint: Text('Account type'),
+                          dropdownStyleData: DropdownStyleData(
+                              decoration: BoxDecoration(
+                            color: Colors.white,
+                          )),
+                          buttonStyleData: ButtonStyleData(
+                              decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  border: Border.all(
+                                    color: Colors.black,
+                                  ))),
+                          items: accounttype
+                              .map((e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Text(e),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              accounttypeholder = value as String;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
                       GestureDetector(
                         onTap: () async {
                           if (_formKey.currentState!.validate()) {
                             dynamic result = await _auth.signup(
-                                name.text, createpassowrd.text, email.text);
+                                name.text,
+                                createpassowrd.text,
+                                email.text,
+                                accounttypeholder!);
                             if (result == null) {
                               setState(() {
                                 error = 'invalid email and password';
@@ -145,9 +184,6 @@ class _SignupState extends State<Signup> {
                       ),
                       SizedBox(
                         height: 10,
-                      ),
-                      SizedBox(
-                        height: 20,
                         child: Text(error),
                       ),
                       Row(
