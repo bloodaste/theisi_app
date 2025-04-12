@@ -18,7 +18,7 @@ class _AnalyticspageState extends State<Analyticspage> {
   Databaseservices dbservice = Databaseservices();
   Qrdatabase rfid = Qrdatabase();
   String? dropdownvalue;
-  bool? islinked;
+
   Map<String, dynamic>? qrinfo;
 
   List<String> sortby = [
@@ -33,7 +33,7 @@ class _AnalyticspageState extends State<Analyticspage> {
   List<Map<String, dynamic>> rfidlist = [];
   String? seletedrfid;
   Authservice getcurrentrole = Authservice();
-  String currentrole = '';
+  String? currentrole = '';
 
   final TextEditingController controller = TextEditingController();
   final TextEditingController addname = TextEditingController();
@@ -42,15 +42,17 @@ class _AnalyticspageState extends State<Analyticspage> {
   final TextEditingController layernumber = TextEditingController();
 
   void fetchrole() async {
-    String? role = await getcurrentrole.getuserrole();
+    Map<String, dynamic> role = await getcurrentrole.getuserrole();
     print("Fetched role: $role");
-    if (role == 'Admin') {
+    if (role['role'] == 'Admin') {
       setState(() {
-        currentrole = 'Admin';
+        setState(() {
+          currentrole = role['role'];
+        });
       });
-    } else if (role == 'Employee') {
+    } else if (role['role'] == 'Employee') {
       setState(() {
-        currentrole = 'Employee';
+        currentrole = role['role'];
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -94,7 +96,6 @@ class _AnalyticspageState extends State<Analyticspage> {
       for (var doc in snapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-        // Adding the product data along with the QR data from rfidlist at the given index
         tempList.add(
           Modeldataforproducts(
             qr: data['qr'],
@@ -275,7 +276,7 @@ class _AnalyticspageState extends State<Analyticspage> {
                     print("Error: No RFID selected.");
                   }
                   dbservice.updateproduct(
-                    seletedrfid ?? 'no qravaible',
+                    seletedrfid!,
                     docid,
                     newname.text,
                     int.tryParse(newlayernum.text) ?? 0,
@@ -302,6 +303,7 @@ class _AnalyticspageState extends State<Analyticspage> {
     filtered = products;
     fetchData();
     fetchQr();
+    fetchrole();
   }
 
   @override
@@ -449,7 +451,7 @@ class _AnalyticspageState extends State<Analyticspage> {
                     )
                   ],
                 ),
-              )
+              ),
             ],
           ),
           SizedBox(
@@ -458,6 +460,7 @@ class _AnalyticspageState extends State<Analyticspage> {
           Expanded(
             child: ListView.builder(
               addAutomaticKeepAlives: false,
+              shrinkWrap: true,
               itemCount: filtered.length,
               itemBuilder: (context, index) {
                 return GestureDetector(
@@ -469,7 +472,7 @@ class _AnalyticspageState extends State<Analyticspage> {
                     });
                   },
                   child: ProductList(
-                    currentrole: currentrole,
+                    currentrole: currentrole!,
                     nameOfProduct: filtered[index].name,
                     quantityOfProduct: filtered[index].total,
                     restockOfProduct: filtered[index].resupply,
@@ -485,75 +488,69 @@ class _AnalyticspageState extends State<Analyticspage> {
               },
             ),
           ),
-          TextButton(
-            onPressed: () {
-              print(rfidlist);
-              print(seletedrfid);
-              print(currentrole);
-            },
-            child: Text('pressme'),
-          )
         ]),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('Add a product'),
-              content: Addproducts(
-                currentstock: stocklvel,
-                layernumber: layernumber,
-                name: addname,
-                needstoberestock: needtobestock,
-                rfid: rfidlist,
-                seletedrfid: (value) {
-                  setState(() {
-                    seletedrfid = value;
-                  });
-                },
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    if (seletedrfid != null) {
-                      String? docidofrfid;
+      floatingActionButton: currentrole == 'Admin'
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Add a product'),
+                    content: Addproducts(
+                      currentstock: stocklvel,
+                      layernumber: layernumber,
+                      name: addname,
+                      needstoberestock: needtobestock,
+                      rfid: rfidlist,
+                      seletedrfid: (value) {
+                        setState(() {
+                          seletedrfid = value;
+                        });
+                      },
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          if (seletedrfid != null) {
+                            String? docidofrfid;
 
-                      for (var id in rfidlist) {
-                        if (id['qr'] == seletedrfid) {
-                          docidofrfid = id['docid'];
+                            for (var id in rfidlist) {
+                              if (id['qr'] == seletedrfid) {
+                                docidofrfid = id['docid'];
 
-                          break;
-                        }
-                      }
+                                break;
+                              }
+                            }
 
-                      if (docidofrfid != null) {
-                        _addProduct(docidofrfid); // Use docidofrfid here
-                        Navigator.pop(context);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('no rfid attach')),
-                        );
-                      }
-                    } else {
-                      print("Error: No RFID selected.");
-                    }
-                  },
-                  child: Text('submit'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('close'),
-                )
-              ],
-            ),
-          );
-        },
-        label: Text('Add'),
-        icon: Icon(Icons.add),
-      ),
+                            if (docidofrfid != null) {
+                              _addProduct(docidofrfid); // Use docidofrfid here
+                              Navigator.pop(context);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('no rfid attach')),
+                              );
+                            }
+                          } else {
+                            print("Error: No RFID selected.");
+                          }
+                        },
+                        child: Text('submit'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('close'),
+                      )
+                    ],
+                  ),
+                );
+              },
+              label: Text('Add'),
+              icon: Icon(Icons.add),
+            )
+          : SizedBox(),
     );
   }
 }

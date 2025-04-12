@@ -123,7 +123,6 @@ class _ProductListState extends State<ProductList> {
                 child: Container(
                   height: 50,
                   alignment: Alignment.center,
-
                   // padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                       color: Colors.red,
@@ -140,6 +139,9 @@ class _ProductListState extends State<ProductList> {
               )
             ],
           ),
+        ),
+        SizedBox(
+          height: 10,
         ),
         if (widget.showbotton)
           Padding(
@@ -182,7 +184,10 @@ class _ProductListState extends State<ProductList> {
                               ),
                             ),
                           )
-                        : SizedBox(),
+                        : SizedBox(
+                            height: 0,
+                            width: 0,
+                          ),
                     SizedBox(width: 10),
                     widget.currentrole == 'Admin'
                         ? Expanded(
@@ -199,7 +204,10 @@ class _ProductListState extends State<ProductList> {
                               ),
                             ),
                           )
-                        : SizedBox(),
+                        : SizedBox(
+                            width: 0,
+                            height: 0,
+                          ),
                   ],
                 ),
               ],

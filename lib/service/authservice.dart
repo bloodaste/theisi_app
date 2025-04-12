@@ -97,7 +97,7 @@ class Authservice {
     }
   }
 
-  Future<String?> getuserrole() async {
+  Future<Map<String, dynamic>> getuserrole() async {
     User? user = _auth.currentUser;
 
     try {
@@ -105,14 +105,13 @@ class Authservice {
         DocumentSnapshot snapshot =
             await _accountloc.collection('useraccount').doc(user.uid).get();
         if (snapshot.exists) {
-          return snapshot['role'];
+          return snapshot.data() as Map<String, dynamic>;
         }
       }
-      return null;
     } catch (e) {
       print(e);
-      return null;
     }
+    return {};
   }
   // Future otp()async{
   //   try{
