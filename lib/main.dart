@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:theisi_app/firebase_options.dart';
 import 'package:theisi_app/front%20_end_app/models/usermodel.dart';
+import 'package:theisi_app/front%20_end_app/pages/onboardscreen.dart';
 import 'package:theisi_app/service/authservice.dart';
 import 'package:theisi_app/wrapperifaccountlogin.dart';
 
